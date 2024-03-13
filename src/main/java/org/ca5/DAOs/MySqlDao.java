@@ -5,6 +5,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class MySqlDao {
+    /**
+
+     * Author:  Aoife Murphy
+     * Other contributors:  Kim Fui Leung, Jamie Duffy Creagh
+     * Date: 9-03-24
+
+     */
     private static final String URL = "jdbc:mysql://localhost/";
     private static final String DB_NAME = "library";
     private static final String FULL_URL = URL + DB_NAME;

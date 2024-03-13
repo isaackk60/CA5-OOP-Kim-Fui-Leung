@@ -1,10 +1,4 @@
-/**
 
- * Author:  Aoife Murphy
- * Other contributors:  Kim Fui Leung, Jamie Duffy Creagh
- * Date: 9-03-24
-
- */
 package org.ca5.DAOs;
 
 import java.util.List;

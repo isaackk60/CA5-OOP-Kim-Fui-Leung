@@ -1,11 +1,5 @@
 package org.ca5.DTOs;
-/**
 
- * Author:  Aoife Murphy
- * Other contributors:  Kim Fui Leung, Jamie Duffy Creagh
- * Date: 9-03-24
-
- */
 public class Book {
     private int id;
     private String title;
@@ -142,7 +136,7 @@ public class Book {
                 ", rating=" + rating +
                 ", description='" + description + '\'' +
                 ", publisher='" + publisher + '\'' +
-                '}';
+                "}\n";
     }
 }
 

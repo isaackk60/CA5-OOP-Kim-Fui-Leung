@@ -1,11 +1,5 @@
 package org.ca5.BusinessObjects;
-/**
 
- * Author:  Aoife Murphy
- * Other contributors:  Kim Fui Leung, Jamie Duffy Creagh
- * Date: 9-03-24
-
- */
 
 import org.ca5.DAOs.MySqlBooks;
 
@@ -17,6 +11,13 @@ import java.util.Scanner;
 
 public class App {
 
+    /**
+
+     * Author:  Jamie Duffy Creagh
+     * Other contributors:  Kim Fui Leung, Aoife Murphy
+     * Date: 9-03-24
+
+     */
     public static void main(String[] args) throws DaoException {
 
         BookDaoInterface IBookDao = new MySqlBooks();
@@ -32,6 +33,7 @@ public class App {
             System.out.println("2. Add to Database");
             System.out.println("3. Delete from Database");
             System.out.println("4. Get Book from Database Using ID");
+            System.out.println("5. Update book from Database Using ID");
             System.out.println("0. Exit");
 
             System.out.print("Enter your choice: ");

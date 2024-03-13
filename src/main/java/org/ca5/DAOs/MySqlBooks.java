@@ -1,11 +1,5 @@
 package org.ca5.DAOs;
-/**
 
- * Author:  Aoife Murphy
- * Other contributors:  Kim Fui Leung, Jamie Duffy Creagh
- * Date: 9-03-24
-
- */
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -53,6 +47,13 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
 
     }
 
+
+    /**
+
+     * Author:  Jamie Duffy Creagh
+     * Date: 9-03-24
+
+     */
     public void insertBook(Scanner scanner) {
         System.out.println("\nAdding to Database:");
 
@@ -115,7 +116,13 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
         }
     }
 
-    // kimissac
+
+    /**
+
+     * Author:  Kim Fui Leung
+     * Date: 9-03-24
+
+     */
     public void deleteBookById(int id) {
 
         String queryDelete = "DELETE FROM books WHERE id = " + id;
@@ -136,11 +143,13 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
         }
     }
 
-    /*
-     * Aoife Murphy
-     * Function 2 Find by id
-     */
 
+    /**
+
+     * Author:  Aoife Murphy
+     * Date: 9-03-24
+
+     */
     public Book getBookById(int id) throws DaoException {
         String query = "SELECT * FROM books WHERE id = ?";
         Book book = null;
