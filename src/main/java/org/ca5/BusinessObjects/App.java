@@ -7,6 +7,7 @@ import org.ca5.DAOs.BookDaoInterface;
 import org.ca5.DTOs.Book;
 import org.ca5.Exceptions.DaoException;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
@@ -34,6 +35,7 @@ public class App {
             System.out.println("3. Delete from Database");
             System.out.println("4. Get Book from Database Using ID");
             System.out.println("5. Update book from Database Using ID");
+            System.out.println("6. Filter book from Database");
             System.out.println("0. Exit");
 
             System.out.print("Enter your choice: ");
@@ -62,6 +64,32 @@ public class App {
                         System.out.println("No Book found with the id " + bookId);
                     }
 
+                    break;
+                case 6:
+                    System.out.println("\nMenu:");
+                    System.out.println("1. Filter by page over 400");
+                    System.out.println("2. Filter by page below 400");
+                    System.out.print("Enter your choice: ");
+                    int filterChoice=scanner.nextInt();
+                    switch (filterChoice){
+                        case 1:
+                        case 2:
+                            List<Book> bookFilters=IBookDao.findBooksUsingFilter(filterChoice);
+                            if(!bookFilters.isEmpty()){
+                                for(Book bookFilter:bookFilters){
+                                    System.out.println(bookFilter.toString());
+                                }
+                            }else{
+                                if(filterChoice==1){
+                                System.out.println("No book found with page over 400");}
+                                else{
+                                    System.out.println("No book found with page below 400");
+                                }
+                            }
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Please enter a valid option.");
+                    }
                     break;
                 case 0:
                     System.out.println("Exiting the program. Goodbye!");

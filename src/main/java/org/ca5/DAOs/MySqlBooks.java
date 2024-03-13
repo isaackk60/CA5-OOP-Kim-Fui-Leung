@@ -184,5 +184,54 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
 
         return book;
     }
+
+
+
+
+    /**
+
+     * Author:  Kim Fui Leung
+     * Date: 13-03-24
+
+     */
+    public List<Book> findBooksUsingFilter(int selected) throws DaoException {
+        List<Book> booksList = new ArrayList<>();
+        String query;
+        if (selected == 1) {
+            query = "SELECT * FROM books WHERE Pages > 400";
+        } else {
+            query = "SELECT * FROM books WHERE Pages < 400";
+        }
+
+        Book book = null;
+
+        try (Connection connection = this.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+            ) {
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
+                while (resultSet.next()) {
+                    int bookId = resultSet.getInt("id");
+                    String bookTitle = resultSet.getString("Title");
+                    String bookGenre = resultSet.getString("Genre");
+                    String bookAuthor = resultSet.getString("Author");
+                    int bookPages = resultSet.getInt("Pages");
+                    boolean bookSeries = resultSet.getBoolean("Series");
+                    int bookStock = resultSet.getInt("Stock");
+                    double bookRating = resultSet.getDouble("Rating");
+                    String bookDescription = resultSet.getString("Description");
+                    String bookPublisher = resultSet.getString("Publisher");
+
+                    book = new Book(bookId, bookTitle, bookGenre, bookAuthor, bookPages, bookSeries, bookStock,
+                            bookRating, bookDescription, bookPublisher);
+                    booksList.add(book);
+                }
+            }
+        } catch (SQLException ex) {
+
+        }
+        return booksList;
+    }
 }
 

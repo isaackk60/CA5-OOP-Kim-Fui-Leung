@@ -16,5 +16,7 @@ public interface BookDaoInterface {
     public void deleteBookById(int id);
 
     public Book getBookById(int id) throws DaoException;
+
+    public List<Book> findBooksUsingFilter(int selected) throws DaoException;
 }
 
