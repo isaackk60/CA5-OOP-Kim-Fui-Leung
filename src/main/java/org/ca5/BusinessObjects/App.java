@@ -122,18 +122,23 @@ public class App {
                     int filterChoice=scanner.nextInt();
                     switch (filterChoice){
                         case 1:
-                        case 2:
-                            List<Book> bookFilters=IBookDao.findBooksUsingFilter(filterChoice);
-                            if(!bookFilters.isEmpty()){
-                                for(Book bookFilter:bookFilters){
+                            List<Book> booksOver400Pages = IBookDao.findBooksUsingFilter(new BookPageComparatorOver400());
+                            if(!booksOver400Pages.isEmpty()){
+                                for(Book bookFilter:booksOver400Pages){
                                     System.out.println(bookFilter.toString());
                                 }
                             }else{
-                                if(filterChoice==1){
-                                System.out.println("No book found with page over 400");}
-                                else{
-                                    System.out.println("No book found with page below 400");
+                                System.out.println("No book found with page over 400");
+                            }
+                            break;
+                        case 2:
+                            List<Book> booksUnder400Pages = IBookDao.findBooksUsingFilter(new BookPageComparatorUnder400());
+                            if(!booksUnder400Pages.isEmpty()){
+                                for(Book bookFilter:booksUnder400Pages){
+                                    System.out.println(bookFilter.toString());
                                 }
+                            }else{
+                                System.out.println("No book found with page below 400");
                             }
                             break;
                         default:
