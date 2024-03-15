@@ -1,6 +1,7 @@
 
 package org.ca5.DAOs;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -17,7 +18,7 @@ public interface BookDaoInterface {
 
     public Book getBookById(int id) throws DaoException;
 
-    public List<Book> findBooksUsingFilter(int selected) throws DaoException;
+    public List<Book> findBooksUsingFilter(Comparator<Book> comparator) throws DaoException;
 
     public Book updateBook(int id, Book updatedBook) throws DaoException;
 }

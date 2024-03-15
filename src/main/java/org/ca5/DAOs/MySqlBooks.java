@@ -5,9 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
+import org.ca5.BusinessObjects.BookPageComparatorOver400;
+import org.ca5.BusinessObjects.BookPageComparatorUnder400;
 import org.ca5.DTOs.Book;
 import org.ca5.Exceptions.DaoException;
 
@@ -236,47 +239,51 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
      * Date: 13-03-24
 
      */
-    public List<Book> findBooksUsingFilter(int selected) throws DaoException {
+    public List<Book> findBooksUsingFilter(Comparator<Book> comparator) throws DaoException {
         List<Book> booksList = new ArrayList<>();
-        String query;
-        if (selected == 1) {
-            query = "SELECT * FROM books WHERE Pages > 400";
-        } else {
-            query = "SELECT * FROM books WHERE Pages < 400";
-        }
-
-        Book book = null;
+        String query = "SELECT * FROM books";
 
         try (Connection connection = this.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
-            ) {
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                int bookId = resultSet.getInt("id");
+                String bookTitle = resultSet.getString("Title");
+                String bookGenre = resultSet.getString("Genre");
+                String bookAuthor = resultSet.getString("Author");
+                int bookPages = resultSet.getInt("Pages");
+                boolean bookSeries = resultSet.getBoolean("Series");
+                int bookStock = resultSet.getInt("Stock");
+                double bookRating = resultSet.getDouble("Rating");
+                String bookDescription = resultSet.getString("Description");
+                String bookPublisher = resultSet.getString("Publisher");
 
-                while (resultSet.next()) {
-                    int bookId = resultSet.getInt("id");
-                    String bookTitle = resultSet.getString("Title");
-                    String bookGenre = resultSet.getString("Genre");
-                    String bookAuthor = resultSet.getString("Author");
-                    int bookPages = resultSet.getInt("Pages");
-                    boolean bookSeries = resultSet.getBoolean("Series");
-                    int bookStock = resultSet.getInt("Stock");
-                    double bookRating = resultSet.getDouble("Rating");
-                    String bookDescription = resultSet.getString("Description");
-                    String bookPublisher = resultSet.getString("Publisher");
+                Book book = new Book(bookId, bookTitle, bookGenre, bookAuthor, bookPages, bookSeries, bookStock,
+                        bookRating, bookDescription, bookPublisher);
 
-                    book = new Book(bookId, bookTitle, bookGenre, bookAuthor, bookPages, bookSeries, bookStock,
-                            bookRating, bookDescription, bookPublisher);
+                if (comparator != null) {
+                    if(comparator instanceof BookPageComparatorOver400 && bookPages >= 400){
+                    booksList.add(book);
+                    }else if(comparator instanceof BookPageComparatorUnder400 && bookPages < 400){
+                    booksList.add(book);
+                    }
+                } else {
                     booksList.add(book);
                 }
             }
         } catch (SQLException ex) {
-            System.out.println(
-                    "Failed to connect to the database - check MySQL is running and that you are using the correct database details");
+            System.out.println("Failed to connect to the database - check MySQL is running and that you are using the correct database details");
             ex.printStackTrace();
-
         }
+
+
+        if (comparator != null) {
+            booksList.sort(comparator);
+        }
+
         return booksList;
     }
+
 }
 
