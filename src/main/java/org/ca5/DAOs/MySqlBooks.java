@@ -1,6 +1,5 @@
 package org.ca5.DAOs;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,7 +50,7 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
     /**
 
      * Author:  Jamie Duffy Creagh
-     * Date: 9-03-24
+     * Date: 8-03-24
 
      */
     public void insertBook(Scanner scanner) {
@@ -120,20 +119,23 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
     /**
 
      * Author:  Kim Fui Leung
-     * Date: 9-03-24
+     * Date: 8-03-24
 
      */
     public void deleteBookById(int id) {
 
-        String queryDelete = "DELETE FROM books WHERE id = " + id;
+        String queryDelete = "DELETE FROM books WHERE id = ?";
         try (Connection connection = this.getConnection();
 
-             PreparedStatement preparedStatement1 = connection.prepareStatement(queryDelete);) {
-            System.out.println("Connected to the database");
-            System.out.println("Building a PreparedStatement to delete row" + id +
-                    "in database.");
+             PreparedStatement preparedStatement = connection.prepareStatement(queryDelete);) {
 
-            preparedStatement1.executeUpdate();
+            preparedStatement.setInt(1, id);
+
+            System.out.println("Connected to the database");
+            System.out.println("Building a PreparedStatement to delete row " + id +
+                    " in database.");
+
+            preparedStatement.executeUpdate();
         }
 
         catch (SQLException ex) {
@@ -147,7 +149,7 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
     /**
 
      * Author:  Aoife Murphy
-     * Date: 9-03-24
+     * Date: 8-03-24
 
      */
     public Book getBookById(int id) throws DaoException {
@@ -179,11 +181,51 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
                 }
             }
         } catch (SQLException ex) {
-
+            System.out.println(
+                    "Failed to connect to the database - check MySQL is running and that you are using the correct database details");
+            ex.printStackTrace();
         }
 
         return book;
     }
+
+    /**
+
+     * Author:  Aoife Murphy
+     * Date: 13-03-24
+
+     */
+    public Book updateBook(int id, Book updatedBook) throws DaoException {
+        String query = "UPDATE books SET Title=?, Genre=?, Author=?, Pages=?, Series=?, Stock=?, Rating=?, Description=?, Publisher=? WHERE id=?";
+
+        try (Connection connection = this.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, updatedBook.getTitle());
+            preparedStatement.setString(2, updatedBook.getGenre());
+            preparedStatement.setString(3, updatedBook.getAuthor());
+            preparedStatement.setInt(4, updatedBook.getPages());
+            preparedStatement.setBoolean(5, updatedBook.isSeries());
+            preparedStatement.setInt(6, updatedBook.getStock());
+            preparedStatement.setDouble(7, updatedBook.getRating());
+            preparedStatement.setString(8, updatedBook.getDescription());
+            preparedStatement.setString(9, updatedBook.getPublisher());
+            preparedStatement.setInt(10, id);
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+
+            if (rowsUpdated == 0) {
+                throw new DaoException("Failed to update book with ID " + id + ". Book not found.");
+            } else {
+                System.out.println("Book updated successfully!");
+                return updatedBook;
+            }
+
+        } catch (SQLException ex) {
+            throw new DaoException("Error updating book with ID " + id + ": " + ex.getMessage());
+        }
+    }
+
 
 
 
@@ -229,6 +271,9 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
                 }
             }
         } catch (SQLException ex) {
+            System.out.println(
+                    "Failed to connect to the database - check MySQL is running and that you are using the correct database details");
+            ex.printStackTrace();
 
         }
         return booksList;
