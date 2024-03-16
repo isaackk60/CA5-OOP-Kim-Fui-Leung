@@ -15,7 +15,10 @@ import org.ca5.DTOs.Book;
 import org.ca5.Exceptions.DaoException;
 
 public class MySqlBooks extends MySqlDao implements BookDaoInterface {
-
+    /**
+     * Main author: Jamie Duffy Creagh
+     * Date: 08-03-2024
+     **/
     public List<Book> getAllBooks() throws DaoException {
         List<Book> booksList = new ArrayList<>();
         try (Connection connection = this.getConnection();
@@ -49,47 +52,112 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
 
     }
 
-
     /**
+     * Main author: Jamie Duffy Creagh
+     * Date: 08-03-2024
+     **/
 
-     * Author:  Jamie Duffy Creagh
-     * Date: 8-03-24
-
-     */
     public void insertBook(Scanner scanner) {
         System.out.println("\nAdding to Database:");
 
-        System.out.println(" ");
-        scanner.nextLine();
-
         System.out.println("Enter book title:");
-        String title = scanner.nextLine();
+        String title = scanner.nextLine().trim();
 
-        System.out.println("Enter book genre:");
-        String genre = scanner.nextLine();
+        while (title.trim().isEmpty()) {
+            System.out.println("Enter book title:");
+            title = scanner.nextLine().trim();
+            if (title.trim().isEmpty()) {
+                System.out.println("Invalid input please try again");
+            }
+        }
 
-        System.out.println("Enter book author:");
-        String author = scanner.nextLine();
 
-        System.out.println("Enter number of pages:");
-        int pages = scanner.nextInt();
+        String genre = "";
+        while (genre.trim().isEmpty()) {
+            System.out.println("Enter book genre:");
+            genre = scanner.nextLine().trim();
 
+            if (genre.trim().isEmpty()) {
+                System.out.println("Invalid input please try again");
+            }
+        }
+
+        String author = "";
+        while (author.trim().isEmpty()) {
+            System.out.println("Enter book author:");
+            author = scanner.nextLine().trim();
+            if (author.trim().isEmpty()) {
+                System.out.println("Invalid input please try again");
+            }
+        }
+
+
+        int pages = 0;
+        while (pages <= 0) {
+            System.out.println("Enter number of pages:");
+            if (scanner.hasNextInt()) {
+                pages = scanner.nextInt();
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next(); // clear the invalid input
+            }
+        }
+
+
+        boolean series = false;
         System.out.println("Is the book part of a series? (true/false):");
-        boolean series = scanner.nextBoolean();
+        while (!scanner.hasNextBoolean()) {
+            System.out.println("Invalid input. Please enter true or false.");
+            scanner.next(); // clear the invalid input
+        }
+        series = scanner.nextBoolean();
 
-        System.out.println("Enter stock quantity:");
-        int stock = scanner.nextInt();
 
-        System.out.println("Enter book rating:");
-        double rating = scanner.nextDouble();
+        int stock = 0;
+        while (stock < 0) {
+            System.out.println("Enter stock quantity:");
+            if (scanner.hasNextInt()) {
+                stock = scanner.nextInt();
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next(); // clear the invalid input
+            }
+        }
+
+        // Validate and get book rating
+        double rating = 0.0;
+        while (rating < 0) {
+            System.out.println("Enter book rating:");
+            if (scanner.hasNextDouble()) {
+                rating = scanner.nextDouble();
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next(); // clear the invalid input
+            }
+        }
 
         scanner.nextLine();
 
-        System.out.println("Enter book description:");
-        String description = scanner.nextLine();
+        // Validate and get book description
+        String description = "";
+        while (description.trim().isEmpty()) {
+            System.out.println("Enter book description:");
+            description = scanner.nextLine().trim();
+            if (description.trim().isEmpty()) {
+                System.out.println("Invalid input please try again");
+            }
+        }
 
-        System.out.println("Enter book publisher:");
-        String publisher = scanner.nextLine();
+        // Validate and get book publisher
+        String publisher = "";
+        while (publisher.trim().isEmpty()) {
+            System.out.println("Enter book publisher:");
+            publisher = scanner.nextLine().trim();
+            if (publisher.trim().isEmpty()) {
+                System.out.println("Invalid input please try again");
+            }
+        }
+
 
         String query1 = "INSERT INTO library.books (Title, Genre, Author, Pages, Series, Stock, Rating, Description, Publisher) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -118,30 +186,23 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
         }
     }
 
-
     /**
-
-     * Author:  Kim Fui Leung
-     * Date: 8-03-24
-
-     */
+     * Main author: Kim Fui Leung
+     * Date: 08-03-2024
+     **/
     public void deleteBookById(int id) {
 
-        String queryDelete = "DELETE FROM books WHERE id = ?";
+        String queryDelete = "DELETE FROM books WHERE id = " + id;
         try (Connection connection = this.getConnection();
 
-             PreparedStatement preparedStatement = connection.prepareStatement(queryDelete);) {
-
-            preparedStatement.setInt(1, id);
-
+             PreparedStatement preparedStatement1 = connection.prepareStatement(queryDelete);) {
             System.out.println("Connected to the database");
-            System.out.println("Building a PreparedStatement to delete row " + id +
-                    " in database.");
 
-            preparedStatement.executeUpdate();
-        }
+            System.out.println("Building a PreparedStatement to delete row" + id +
+                    "in database.");
 
-        catch (SQLException ex) {
+            preparedStatement1.executeUpdate();
+        } catch (SQLException ex) {
             System.out.println(
                     "Failed to connect to the database - check MySQL is running and that you are using the correct database details");
             ex.printStackTrace();
@@ -150,11 +211,9 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
 
 
     /**
-
-     * Author:  Aoife Murphy
-     * Date: 8-03-24
-
-     */
+     * Main author: Aoife Murphy
+     * Date: 08-03-2024
+     **/
     public Book getBookById(int id) throws DaoException {
         String query = "SELECT * FROM books WHERE id = ?";
         Book book = null;
@@ -184,20 +243,16 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
                 }
             }
         } catch (SQLException ex) {
-            System.out.println(
-                    "Failed to connect to the database - check MySQL is running and that you are using the correct database details");
-            ex.printStackTrace();
+
         }
 
         return book;
     }
 
     /**
-
-     * Author:  Aoife Murphy
-     * Date: 13-03-24
-
-     */
+     * Main author: Aoife Murphy
+     * Date: 15-03-2024
+     **/
     public Book updateBook(int id, Book updatedBook) throws DaoException {
         String query = "UPDATE books SET Title=?, Genre=?, Author=?, Pages=?, Series=?, Stock=?, Rating=?, Description=?, Publisher=? WHERE id=?";
 
@@ -229,16 +284,10 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
         }
     }
 
-
-
-
-
     /**
-
-     * Author:  Kim Fui Leung
-     * Date: 13-03-24
-
-     */
+     * Main author: Kim Fui Leung
+     * Date: 15-03-2024
+     **/
     public List<Book> findBooksUsingFilter(Comparator<Book> comparator) throws DaoException {
         List<Book> booksList = new ArrayList<>();
         String query = "SELECT * FROM books";
@@ -263,10 +312,10 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
                         bookRating, bookDescription, bookPublisher);
 
                 if (comparator != null) {
-                    if(comparator instanceof BookPageComparatorOver400 && bookPages >= 400){
-                    booksList.add(book);
-                    }else if(comparator instanceof BookPageComparatorUnder400 && bookPages < 400){
-                    booksList.add(book);
+                    if ((comparator instanceof BookPageComparatorOver400) && (bookPages >= 400)) {
+                        booksList.add(book);
+                    } else if (comparator instanceof BookPageComparatorUnder400 && bookPages < 400) {
+                        booksList.add(book);
                     }
                 } else {
                     booksList.add(book);
@@ -286,4 +335,3 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
     }
 
 }
-
