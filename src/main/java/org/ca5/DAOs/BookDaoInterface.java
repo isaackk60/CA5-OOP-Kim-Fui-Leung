@@ -12,7 +12,7 @@ public interface BookDaoInterface {
 
     public List<Book> getAllBooks() throws DaoException;
 
-    public void insertBook(Scanner scanner);
+    public Book insertBook(Book newBook);
 
     public void deleteBookById(int id);
 

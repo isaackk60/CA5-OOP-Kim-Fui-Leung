@@ -54,7 +54,106 @@ public class App {
                         System.out.println(IBookDao.getAllBooks());
                         break;
                     case 2:
-                        IBookDao.insertBook(scanner);
+
+                        System.out.println("\nAdding to Database:");
+                        String newTitle=scanner.nextLine().trim();
+                        while (newTitle.trim().isEmpty()) {
+                            System.out.println("Enter book Title:");
+                            newTitle = scanner.nextLine().trim();
+
+                            if (newTitle.trim().isEmpty()) {
+                                System.out.println("Invalid input please try again");
+                            }
+                        }
+
+
+                        String newGenre = "";
+                        while (newGenre.trim().isEmpty()) {
+                            System.out.println("Enter book Genre:");
+                            newGenre = scanner.nextLine().trim();
+
+                            if (newGenre.trim().isEmpty()) {
+                                System.out.println("Invalid input please try again");
+                            }
+                        }
+
+                        String newAuthor = "";
+                        while (newAuthor.trim().isEmpty()) {
+                            System.out.println("Enter book Author:");
+                            newAuthor = scanner.nextLine().trim();
+                            if (newAuthor.trim().isEmpty()) {
+                                System.out.println("Invalid input please try again");
+                            }
+                        }
+
+
+                        int newPages = 0;
+                        while (newPages <= 0) {
+                            System.out.println("Enter number of pages:");
+                            if (scanner.hasNextInt()) {
+                                newPages = scanner.nextInt();
+                            } else {
+                                System.out.println("Invalid input. Please enter a valid number.");
+                                scanner.next(); // clear the invalid input
+                            }
+                        }
+
+
+                        boolean newSeries = false;
+                        System.out.println("Is the book part of a series? (true/false):");
+                        while (!scanner.hasNextBoolean()) {
+                            System.out.println("Invalid input. Please enter true or false.");
+                            scanner.next(); // clear the invalid input
+                        }
+                        newSeries = scanner.nextBoolean();
+
+
+                        int newStock = -1;
+                        while (newStock < 0) {
+                            System.out.println("Enter stock quantity:");
+                            if (scanner.hasNextInt()) {
+                                newStock = scanner.nextInt();
+                            } else {
+                                System.out.println("Invalid input. Please enter a valid number.");
+                                scanner.next(); // clear the invalid input
+                            }
+                        }
+
+                        double newRating = -1;
+                        while (newRating < 0) {
+                            System.out.println("Enter book rating:");
+                            if (scanner.hasNextDouble()) {
+                                newRating = scanner.nextDouble();
+                            } else {
+                                System.out.println("Invalid input. Please enter a valid number.");
+                                scanner.next(); // clear the invalid input
+                            }
+                        }
+
+                        scanner.nextLine();
+
+                        String newDescription = "";
+                        while (newDescription.trim().isEmpty()) {
+                            System.out.println("Enter book description:");
+                            newDescription = scanner.nextLine().trim();
+                            if (newDescription.trim().isEmpty()) {
+                                System.out.println("Invalid input please try again");
+                            }
+                        }
+
+                        String newPublisher = "";
+                        while (newPublisher.trim().isEmpty()) {
+                            System.out.println("Enter book publisher:");
+                            newPublisher = scanner.nextLine().trim();
+                            if (newPublisher.trim().isEmpty()) {
+                                System.out.println("Invalid input please try again");
+                            }
+                        }
+
+                        Book newBook = new Book(newTitle, newGenre, newAuthor, newPages, newSeries, newStock, newRating, newDescription, newPublisher);
+
+                        Book insertedBook = IBookDao.insertBook(newBook);
+                        System.out.println(insertedBook.toString());
                         break;
                     case 3:
                         System.out.println("Enter the ID of the book to delete:");

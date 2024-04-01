@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.sql.Statement;
+
 
 import org.ca5.BusinessObjects.BookPageComparatorOver400;
 import org.ca5.BusinessObjects.BookPageComparatorUnder400;
@@ -54,116 +56,26 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
 
     /**
      * Main author: Jamie Duffy Creagh
+     * Other contributors: Kim Fui Leung
      * Date: 08-03-2024
      **/
 
-    public void insertBook(Scanner scanner) {
-        System.out.println("\nAdding to Database:");
-
-        System.out.println("Enter book title:");
-        String title = scanner.nextLine().trim();
-
-        while (title.trim().isEmpty()) {
-            System.out.println("Enter book title:");
-            title = scanner.nextLine().trim();
-            if (title.trim().isEmpty()) {
-                System.out.println("Invalid input please try again");
-            }
-        }
-
-
-        String genre = "";
-        while (genre.trim().isEmpty()) {
-            System.out.println("Enter book genre:");
-            genre = scanner.nextLine().trim();
-
-            if (genre.trim().isEmpty()) {
-                System.out.println("Invalid input please try again");
-            }
-        }
-
-        String author = "";
-        while (author.trim().isEmpty()) {
-            System.out.println("Enter book author:");
-            author = scanner.nextLine().trim();
-            if (author.trim().isEmpty()) {
-                System.out.println("Invalid input please try again");
-            }
-        }
-
-
-        int pages = 0;
-        while (pages <= 0) {
-            System.out.println("Enter number of pages:");
-            if (scanner.hasNextInt()) {
-                pages = scanner.nextInt();
-            } else {
-                System.out.println("Invalid input. Please enter a valid number.");
-                scanner.next(); // clear the invalid input
-            }
-        }
-
-
-        boolean series = false;
-        System.out.println("Is the book part of a series? (true/false):");
-        while (!scanner.hasNextBoolean()) {
-            System.out.println("Invalid input. Please enter true or false.");
-            scanner.next(); // clear the invalid input
-        }
-        series = scanner.nextBoolean();
-
-
-        int stock = 0;
-        while (stock < 0) {
-            System.out.println("Enter stock quantity:");
-            if (scanner.hasNextInt()) {
-                stock = scanner.nextInt();
-            } else {
-                System.out.println("Invalid input. Please enter a valid number.");
-                scanner.next(); // clear the invalid input
-            }
-        }
-
-        // Validate and get book rating
-        double rating = 0.0;
-        while (rating < 0) {
-            System.out.println("Enter book rating:");
-            if (scanner.hasNextDouble()) {
-                rating = scanner.nextDouble();
-            } else {
-                System.out.println("Invalid input. Please enter a valid number.");
-                scanner.next(); // clear the invalid input
-            }
-        }
-
-        scanner.nextLine();
-
-        // Validate and get book description
-        String description = "";
-        while (description.trim().isEmpty()) {
-            System.out.println("Enter book description:");
-            description = scanner.nextLine().trim();
-            if (description.trim().isEmpty()) {
-                System.out.println("Invalid input please try again");
-            }
-        }
-
-        // Validate and get book publisher
-        String publisher = "";
-        while (publisher.trim().isEmpty()) {
-            System.out.println("Enter book publisher:");
-            publisher = scanner.nextLine().trim();
-            if (publisher.trim().isEmpty()) {
-                System.out.println("Invalid input please try again");
-            }
-        }
-
+    public Book insertBook(Book newBook) {
+        Book book = null;
+        String title = newBook.getTitle();
+        String genre = newBook.getGenre();
+        String author = newBook.getAuthor();
+        int pages = newBook.getPages();
+        boolean series = newBook.isSeries();
+        int stock = newBook.getStock();
+        double rating = newBook.getRating();
+        String description = newBook.getDescription();
+        String publisher = newBook.getPublisher();
 
         String query1 = "INSERT INTO library.books (Title, Genre, Author, Pages, Series, Stock, Rating, Description, Publisher) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = this.getConnection();
-
-             PreparedStatement preparedStatement1 = connection.prepareStatement(query1)) {
+             PreparedStatement preparedStatement1 = connection.prepareStatement(query1, Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement1.setString(1, title);
             preparedStatement1.setString(2, genre);
@@ -175,16 +87,27 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
             preparedStatement1.setString(8, description);
             preparedStatement1.setString(9, publisher);
 
-            preparedStatement1.executeUpdate();
+            int rowsAffected = preparedStatement1.executeUpdate();
 
-            System.out.println("Book added successfully!");
+            if (rowsAffected == 1) {
+                ResultSet generatedKeys = preparedStatement1.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int bookId = generatedKeys.getInt(1);
+                    book = new Book(bookId, title, genre, author, pages, series, stock, rating, description, publisher);
+                } else {
+                    throw new DaoException("Failed to retrieve auto-generated ID for the new book.");
+                }
+            } else {
+                throw new DaoException("Failed to insert new book. No rows affected.");
+            }
 
         } catch (SQLException ex) {
-            System.out.println(
-                    "Failed to connect to the database - check MySQL is running and that you are using the correct database details");
+            System.out.println("Failed to connect to the database or execute query.");
             ex.printStackTrace();
         }
+        return book;
     }
+
 
     /**
      * Main author: Kim Fui Leung

@@ -15,6 +15,8 @@ import org.ca5.DAOs.BookDaoInterface;
 import org.ca5.DTOs.Book;
 import org.ca5.Exceptions.DaoException;
 
+import java.sql.SQLException;
+
 /**
  * Unit test for simple App.
  */
@@ -139,5 +141,20 @@ public class AppTest
             assertEquals("Error updating book with ID 24: Failed to update book with ID 24. Book not found.", e.getMessage());
         }
     }
+
+//    @Test
+//    public void testDeleteBookById() throws SQLException {
+//        BookDaoInterface IBookDao = new MySqlBooks();
+//        // Insert a book into the database
+//        Book book = new Book("Test Title", "Test Genre", "Test Author", 200, false, 10, 4.5, "Test Description", "Test Publisher");
+//
+//
+//        // Delete the book by ID
+//        IBookDao.deleteBookById(id);
+//
+//        // Verify that the book is deleted
+//        assertNull(IBookDao.getBookById(id));
+//    }
+
 
 }
