@@ -121,8 +121,8 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
              PreparedStatement preparedStatement1 = connection.prepareStatement(queryDelete);) {
             System.out.println("Connected to the database");
 
-            System.out.println("Building a PreparedStatement to delete row" + id +
-                    "in database.");
+            System.out.println("Building a PreparedStatement to delete row " + id +
+                    " in database.");
 
             preparedStatement1.executeUpdate();
         } catch (SQLException ex) {

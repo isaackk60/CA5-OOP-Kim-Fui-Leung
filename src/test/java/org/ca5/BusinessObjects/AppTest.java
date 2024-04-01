@@ -16,19 +16,18 @@ import org.ca5.DTOs.Book;
 import org.ca5.Exceptions.DaoException;
 
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Unit test for simple App.
  */
-public class AppTest
-{
+public class AppTest {
     /**
      * Rigorous Test :-)
      */
     @Test
-    public void shouldAnswerWithTrue()
-    {
-        assertTrue( true );
+    public void shouldAnswerWithTrue() {
+        assertTrue(true);
     }
 
     /*
@@ -142,19 +141,72 @@ public class AppTest
         }
     }
 
-//    @Test
-//    public void testDeleteBookById() throws SQLException {
-//        BookDaoInterface IBookDao = new MySqlBooks();
-//        // Insert a book into the database
-//        Book book = new Book("Test Title", "Test Genre", "Test Author", 200, false, 10, 4.5, "Test Description", "Test Publisher");
-//
-//
-//        // Delete the book by ID
-//        IBookDao.deleteBookById(id);
-//
-//        // Verify that the book is deleted
-//        assertNull(IBookDao.getBookById(id));
-//    }
+    @Test
+    public void testInsertBook() {
+        BookDaoInterface IBookDao = new MySqlBooks();
+
+        // Insert a book into the database
+        Book book = new Book("Test Title", "Test Genre", "Test Author", 200, false, 10, 4.5, "Test Description", "Test Publisher");
+
+        Book insertedBook = IBookDao.insertBook(book);
+        assertEquals("Test Title", insertedBook.getTitle());
+        assertEquals("Test Genre", insertedBook.getGenre());
+        assertEquals("Test Author", insertedBook.getAuthor());
+        assertEquals(200, insertedBook.getPages());
+        assertFalse(insertedBook.isSeries());
+        assertEquals(10, insertedBook.getStock());
+        assertEquals(4.5, insertedBook.getRating(), 0.001);
+        assertEquals("Test Description", insertedBook.getDescription());
+        assertEquals("Test Publisher", insertedBook.getPublisher());
+    }
+
+    @Test
+    public void testDeleteBookById() {
+        BookDaoInterface IBookDao = new MySqlBooks();
+        try {
+            IBookDao.deleteBookById(19);
+
+            // Verify that the book is deleted
+            assertNull(IBookDao.getBookById(19));
+        } catch (DaoException ex) {
+            fail("Failed to delete book: " + ex.getMessage());
+        }
+    }
+
+
+    @Test
+    public void testFilterPageBelow400() {
+        BookDaoInterface IBookDao = new MySqlBooks();
+
+        try {
+            List<Book> booksUnder400Pages = IBookDao.findBooksUsingFilter(new BookPageComparatorUnder400());
+
+            assertFalse(booksUnder400Pages.isEmpty());
+            for (Book book : booksUnder400Pages) {
+                assertTrue(book.getPages() < 400);
+            }
+        } catch (DaoException ex) {
+            fail("Failed to filter books below 400 pages: " + ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testFilterPageOver400() {
+        BookDaoInterface IBookDao = new MySqlBooks();
+
+        try {
+            List<Book> booksOver400Pages = IBookDao.findBooksUsingFilter(new BookPageComparatorOver400());
+
+            assertFalse(booksOver400Pages.isEmpty());
+            for (Book book : booksOver400Pages) {
+                assertTrue(book.getPages() >= 400);
+            }
+        } catch (DaoException ex) {
+            fail("Failed to filter books over 400 pages: " + ex.getMessage());
+        }
+    }
+
+
 
 
 }

@@ -87,8 +87,8 @@ public class App {
                         }
 
 
-                        int newPages = 0;
-                        while (newPages <= 0) {
+                        int newPages = -1;
+                        while (newPages < 0) {
                             System.out.println("Enter number of pages:");
                             if (scanner.hasNextInt()) {
                                 newPages = scanner.nextInt();
