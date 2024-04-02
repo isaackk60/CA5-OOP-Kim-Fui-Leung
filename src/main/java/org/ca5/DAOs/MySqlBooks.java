@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.sql.Statement;
 
+import com.google.gson.Gson;
+
 
 import org.ca5.BusinessObjects.BookPageComparatorOver400;
 import org.ca5.BusinessObjects.BookPageComparatorUnder400;
@@ -255,6 +257,26 @@ public class MySqlBooks extends MySqlDao implements BookDaoInterface {
         }
 
         return booksList;
+    }
+
+    /**
+     * Main author: Aoife Murphy
+     * Date: 01-04-2024
+     **/
+    public String bookToJson(Book b) {
+        Gson gsonParser = new Gson();
+        return gsonParser.toJson(b);
+
+    }
+
+    /**
+     * Main author: Jamie Duffy Creagh
+     * Other contributors: Kim Fui Leung
+     * Date: 02-04-2024
+     **/
+    public String booksListToJson(List<Book> bookList) {
+        Gson gson = new Gson();
+        return gson.toJson(bookList);
     }
 
 }

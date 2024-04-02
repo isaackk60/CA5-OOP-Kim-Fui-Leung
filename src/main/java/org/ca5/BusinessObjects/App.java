@@ -7,6 +7,7 @@ import org.ca5.DAOs.BookDaoInterface;
 import org.ca5.DTOs.Book;
 import org.ca5.Exceptions.DaoException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -32,6 +33,8 @@ public class App {
             System.out.println("=            4. Get Book from Database Using ID    =");
             System.out.println("=            5. Update Book                        =");
             System.out.println("=            6. Filter Book                        =");
+            System.out.println("=            7. Convert List to a JSON String      =");
+            System.out.println("=            8. Convert Book to JSON               =");
             System.out.println("=            0. Exit                               =");
             System.out.println("====================================================");
 
@@ -333,7 +336,40 @@ public class App {
                                 System.out.println("Invalid choice. Please enter a valid option.");
                         }
                         break;
+                    case 7:
+                        System.out.println("Enter starting ID of the books you wish to turn to JSON:");
+                        int startId = scanner.nextInt();
+                        System.out.println("Enter finishing ID of the books you wish to turn to JSON:");
+                        int endId = scanner.nextInt();
 
+                        try {
+                            List<Book> allBooks = IBookDao.getAllBooks(); //makes a copy of all books from the DataBase
+                            List<Book> booksInRange = new ArrayList<>(); // new list created
+
+                            for (Book bookForjson : allBooks) {
+                                if (bookForjson.getId() >= startId && bookForjson.getId() <= endId) {
+                                    booksInRange.add(bookForjson); // loops through the allBooks list and if the id is within the specifies range they are added to the booksInRange method
+                                }
+                            }
+                            String booksInRangeJson = IBookDao.booksListToJson(booksInRange);
+                            System.out.println("List of Books converted to JSON:");
+                            System.out.println(booksInRangeJson);
+                        } catch (DaoException e) {
+                            System.out.println("Error : " + e.getMessage());
+                        }
+                        break;
+                    case 8:
+                        System.out.println("Enter the ID of the book to convert to JSON:");
+                        int jsonBookId = scanner.nextInt();
+                        Book jsonBook = IBookDao.getBookById(jsonBookId);
+                        if (jsonBook != null) {
+                            String json = IBookDao.bookToJson(jsonBook);
+                            System.out.println("Book converted to JSON:");
+                            System.out.println(json);
+                        } else {
+                            System.out.println("No Book found with the id " + jsonBookId);
+                        }
+                        break;
 
                     case 0:
                         System.out.println("Exiting the program. Goodbye!");

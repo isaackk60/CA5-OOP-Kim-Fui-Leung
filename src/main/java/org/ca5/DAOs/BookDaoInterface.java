@@ -21,5 +21,9 @@ public interface BookDaoInterface {
     public List<Book> findBooksUsingFilter(Comparator<Book> comparator) throws DaoException;
 
     public Book updateBook(int id, Book updatedBook) throws DaoException;
+
+    public String bookToJson(Book b);
+
+    public String booksListToJson(List<Book> bookList);
 }
 
