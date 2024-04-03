@@ -97,13 +97,13 @@ public class AppTest {
         BookDaoInterface IBookDao = new MySqlBooks();
 
         System.out.println("Test for updateBook where result is true:");
-        Book updatedBook = new Book(19, "Updated Title", "Updated Genre", "Updated Author", 300, false, 150, 4.5,
+        Book updatedBook = new Book(16, "Updated Title", "Updated Genre", "Updated Author", 300, false, 150, 4.5,
                 "Updated Description", "Updated Publisher");
 
         // Call the updateBook method
         Book result;
         try {
-            result = IBookDao.updateBook(19, updatedBook);
+            result = IBookDao.updateBook(16, updatedBook);
 
             // Verify that the updateBook method returns the updated book
             assertNotNull(result);
@@ -125,21 +125,22 @@ public class AppTest {
         System.out.println("Test for updateBook where result is false:");
 
         // Create an updated book object
-        Book updatedBook = new Book(24, "Updated Title", "Updated Genre", "Updated Author", 300, false, 150, 4.5,
+        Book updatedBook = new Book(100, "Updated Title", "Updated Genre", "Updated Author", 300, false, 150, 4.5,
                 "Updated Description", "Updated Publisher");
 
         // Call the updateBook method
         try {
-            Book result = IBookDao.updateBook(24, updatedBook);
+            Book result = IBookDao.updateBook(100, updatedBook);
 
-            // The method should not return a book object, so if it does, fail the test
+            // The method should return null since the book doesn't exist
             assertNull(result);
 
         } catch (DaoException e) {
             // If a DaoException occurs, it's expected behavior, so the test should pass
-            assertEquals("Error updating book with ID 24: Failed to update book with ID 24. Book not found.", e.getMessage());
+            assertEquals("Error updating book with ID 100: Failed to update book with ID 100. Book not found.", e.getMessage());
         }
     }
+
 
     @Test
     public void testInsertBook() {

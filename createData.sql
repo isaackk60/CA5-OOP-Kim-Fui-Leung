@@ -2,7 +2,7 @@
 CREATE DATABASE IF NOT EXISTS library;
 
 -- Switch to the newly created database
-USE bookstore;
+USE library;
 
 -- Create a table named 'books'
 
