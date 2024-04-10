@@ -1,0 +1,188 @@
+package org.ca5.ServerAndClient;
+
+import java.io.*;
+import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Scanner;
+
+import com.google.gson.JsonParser;
+import org.ca5.DTOs.Book;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+
+public class Client {
+    public static void main(String[] args) {
+        Client client = new Client();
+        client.start();
+    }
+
+    public void start() {
+
+        try ( // create socket to connect to the server
+              Socket socket = new Socket("localhost", 8888);
+              // get the socket's input and output streams, and wrap them in writer and
+              // readers
+              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));) {
+            System.out.println("Client message: The Client is running and has connected to the server");
+            // ask user to enter a command
+            Scanner consoleInput = new Scanner(System.in);
+//            System.out.println(
+//                    "Valid commands are: 1.\"Display all books\" or 2.\"Insert books\" or \"echo <message>\" to get message echoed back, \"quit\"");
+
+
+            while (true) {
+                System.out.println("====================================================");
+                System.out.println("                       Menu:                        ");
+                System.out.println("====================================================");
+                System.out.println("=            1. Display Book by ID                  =");
+                System.out.println("=            2. Display all Books                   =");
+                System.out.println("=            3. Insert a Book                       =");
+                System.out.println("=            0. Exit                                =");
+                System.out.println("====================================================");
+                System.out.println("Please enter a command: ");
+                String userRequest = consoleInput.nextLine();
+
+                /**
+                 * Author: Aoife Murphy
+                 * Other contributors: Kim Fui Leung
+                 * Date 10-04-24
+                 */
+
+                if (userRequest.equals("1"))
+                {
+                    out.println("Display all books");
+
+                    String books = in.readLine();
+
+                    System.out.println(
+                            "Client message: Response from server after \"Display all books\" request: " + books);
+                }else if(userRequest.equals("2")){
+
+                }
+                else if(userRequest.equals("3")){
+                    System.out.println("Enter book Title:");
+                    String newTitle=consoleInput.nextLine().trim();
+                    while (newTitle.trim().isEmpty()) {
+                        System.out.println("Enter book Title:");
+                        newTitle = consoleInput.nextLine().trim();
+
+                        if (newTitle.trim().isEmpty()) {
+                            System.out.println("Invalid input please try again");
+                        }
+                    }
+
+
+                    String newGenre = "";
+                    while (newGenre.trim().isEmpty()) {
+                        System.out.println("Enter book Genre:");
+                        newGenre = consoleInput.nextLine().trim();
+
+                        if (newGenre.trim().isEmpty()) {
+                            System.out.println("Invalid input please try again");
+                        }
+                    }
+
+                    String newAuthor = "";
+                    while (newAuthor.trim().isEmpty()) {
+                        System.out.println("Enter book Author:");
+                        newAuthor = consoleInput.nextLine().trim();
+                        if (newAuthor.trim().isEmpty()) {
+                            System.out.println("Invalid input please try again");
+                        }
+                    }
+
+
+                    int newPages = -1;
+                    while (newPages < 0) {
+                        System.out.println("Enter number of pages:");
+                        if (consoleInput.hasNextInt()) {
+                            newPages = consoleInput.nextInt();
+                        } else {
+                            System.out.println("Invalid input. Please enter a valid number.");
+                            consoleInput.next(); // clear the invalid input
+                        }
+                    }
+
+
+                    boolean newSeries = false;
+                    System.out.println("Is the book part of a series? (true/false):");
+                    while (!consoleInput.hasNextBoolean()) {
+                        System.out.println("Invalid input. Please enter true or false.");
+                        consoleInput.next(); // clear the invalid input
+                    }
+                    newSeries = consoleInput.nextBoolean();
+
+
+                    int newStock = -1;
+                    while (newStock < 0) {
+                        System.out.println("Enter stock quantity:");
+                        if (consoleInput.hasNextInt()) {
+                            newStock = consoleInput.nextInt();
+                        } else {
+                            System.out.println("Invalid input. Please enter a valid number.");
+                            consoleInput.next(); // clear the invalid input
+                        }
+                    }
+
+                    double newRating = -1;
+                    while (newRating < 0) {
+                        System.out.println("Enter book rating:");
+                        if (consoleInput.hasNextDouble()) {
+                            newRating = consoleInput.nextDouble();
+                        } else {
+                            System.out.println("Invalid input. Please enter a valid number.");
+                            consoleInput.next(); // clear the invalid input
+                        }
+                    }
+
+                    consoleInput.nextLine();
+
+                    String newDescription = "";
+                    while (newDescription.trim().isEmpty()) {
+                        System.out.println("Enter book description:");
+                        newDescription = consoleInput.nextLine().trim();
+                        if (newDescription.trim().isEmpty()) {
+                            System.out.println("Invalid input please try again");
+                        }
+                    }
+
+                    String newPublisher = "";
+                    while (newPublisher.trim().isEmpty()) {
+                        System.out.println("Enter book publisher:");
+                        newPublisher = consoleInput.nextLine().trim();
+                        if (newPublisher.trim().isEmpty()) {
+                            System.out.println("Invalid input please try again");
+                        }
+                    }
+                    Gson gson = new Gson();
+                    Book newBook = new Book(newTitle, newGenre, newAuthor, newPages, newSeries, newStock, newRating, newDescription, newPublisher);
+                    JsonObject wrappedJson = new JsonObject();
+                    wrappedJson.add("NewBook", gson.toJsonTree(newBook));
+//                    System.out.println(wrappedJson.toString());
+                    out.println(wrappedJson.toString());
+                    String response = in.readLine();
+
+                    System.out.println("Client message: Response from server after \"Insert books\" request: " + response);
+                }else if(userRequest.equals("0")){
+                    break;
+                }
+                else {
+                    System.out.println("Command unknown. Try again.");
+                }
+
+            }
+        } catch (IOException e) {
+            System.out.println("Client message: IOException: " + e);
+        }
+        // sockets and streams are closed automatically due to try-with-resources
+        // so no finally block required here.
+
+
+        System.out.println("Exiting client, but server may still be running.");
+    }
+}
