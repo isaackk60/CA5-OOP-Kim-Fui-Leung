@@ -111,7 +111,7 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
 
                 /**
                  * Author: Aoife Murphy
-                 * Other contributors: Kim Fui Leung
+                 * Other contributors: Kim Fui Leung, Jamie Duffy Creagh
                  * Date 10-04-24
                  */
                 if (request.startsWith("Display all books")) {
@@ -120,12 +120,30 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
                     String jsonBooks = books.booksListToJson(allBooks);
                     socketWriter.println(jsonBooks);
                     System.out.println("Server message: All Books sent to client.");
-                } else if(request.contains("NewBook")){
-//                    socketWriter.println(request);
-                    JsonParser parser = new JsonParser();
-                    JsonObject jsonObject = parser.parse(request).getAsJsonObject();
-                    JsonObject jsonBook=jsonObject.get("NewBook").getAsJsonObject();
-//                    socketWriter.println(jsonBook.get("publisher").toString());
+                }  else if (request.startsWith("Display Book by ID")) {
+                    int bookId = Integer.parseInt(request.split(":")[1].trim());
+                    MySqlBooks books = new MySqlBooks();
+                    Book book = books.getBookById(bookId);
+                    if (book != null) {
+                        Gson gson = new Gson();
+                        String jsonBook = gson.toJson(book);
+                        socketWriter.println(jsonBook);
+                        System.out.println("Server message: Book sent to client.");
+                    } else {
+                        socketWriter.println("Book with ID " + bookId + " not found.");
+                        System.out.println("Server message: Book with ID " + bookId + " not found.");
+                    }
+                }
+//                else if(request.contains("NewBook")){
+////                    socketWriter.println(request);
+//                    JsonParser parser = new JsonParser();
+//                    JsonObject jsonObject = parser.parse(request).getAsJsonObject();
+//                    JsonObject jsonBook=jsonObject.get("NewBook").getAsJsonObject();
+////                    socketWriter.println(jsonBook.get("publisher").toString());
+                else if(request.startsWith("NewBook:")){
+                    String book=request.substring(request.indexOf("{"));
+                                        JsonParser parser = new JsonParser();
+                    JsonObject jsonBook = parser.parse(book).getAsJsonObject();
 
                     Gson gson = new Gson();
                     Book newBook = gson.fromJson(jsonBook, Book.class);
@@ -134,8 +152,10 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
 
                     if (insertedBook != null) {
                         socketWriter.println("Book inserted successfully: " + insertedBook.toString());
+                        System.out.println("Server message: Book inserted successfully.");
                     } else {
                         socketWriter.println("Failed to insert book.");
+                        System.out.println("Server message: Failed to insert Book.");
                     }
 
 

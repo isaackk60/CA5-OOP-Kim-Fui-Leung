@@ -48,22 +48,36 @@ public class Client {
                 String userRequest = consoleInput.nextLine();
 
                 /**
-                 * Author: Aoife Murphy
-                 * Other contributors: Kim Fui Leung
-                 * Date 10-04-24
-                 */
-
+                 * Main author: Jamie Duffy Creagh
+                 * Date: 11-04-2024
+                 **/
                 if (userRequest.equals("1"))
                 {
+                    System.out.println("Enter Book ID:");
+                    int bookId = consoleInput.nextInt();
+                    consoleInput.nextLine();
+                    out.println("Display Book by ID: " + bookId);
+
+                    String jsonBook = in.readLine();
+                    System.out.println("Client message: Response from server after displaying book: " + jsonBook);
+                }
+
+                /**
+                 * Main author: Aoife Murphy
+                 * Date: 10-04-2024
+                 **/
+                else if(userRequest.equals("2")){
                     out.println("Display all books");
 
                     String books = in.readLine();
 
                     System.out.println(
                             "Client message: Response from server after \"Display all books\" request: " + books);
-                }else if(userRequest.equals("2")){
-
                 }
+                /**
+                 * Main author: Kim Fui Leung
+                 * Date: 10-04-2024
+                 **/
                 else if(userRequest.equals("3")){
                     System.out.println("Enter book Title:");
                     String newTitle=consoleInput.nextLine().trim();
@@ -161,10 +175,12 @@ public class Client {
                     }
                     Gson gson = new Gson();
                     Book newBook = new Book(newTitle, newGenre, newAuthor, newPages, newSeries, newStock, newRating, newDescription, newPublisher);
-                    JsonObject wrappedJson = new JsonObject();
-                    wrappedJson.add("NewBook", gson.toJsonTree(newBook));
-//                    System.out.println(wrappedJson.toString());
-                    out.println(wrappedJson.toString());
+//                    JsonObject wrappedJson = new JsonObject();
+//                    wrappedJson.add("NewBook", gson.toJsonTree(newBook));
+////                    System.out.println(wrappedJson.toString());
+//                    out.println(wrappedJson.toString());
+//                    System.out.println("NewBook:"+gson.toJson(newBook));
+                    out.println("NewBook:"+gson.toJson(newBook));
                     String response = in.readLine();
 
                     System.out.println("Client message: Response from server after \"Insert books\" request: " + response);
