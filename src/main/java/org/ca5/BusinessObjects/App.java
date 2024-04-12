@@ -54,7 +54,10 @@ public class App {
 
                 switch (choice) {
                     case 1:
-                        System.out.println(IBookDao.getAllBooks());
+                        List<Book> books=IBookDao.getAllBooks();
+                        for(Book book:books){
+                            System.out.println(book);
+                        }
                         break;
                     case 2:
 

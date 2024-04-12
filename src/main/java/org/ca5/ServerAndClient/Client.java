@@ -5,10 +5,13 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import org.ca5.DTOs.Book;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -30,6 +33,7 @@ public class Client {
               BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));) {
             System.out.println("Client message: The Client is running and has connected to the server");
             // ask user to enter a command
+            Gson gson = new Gson();
             Scanner consoleInput = new Scanner(System.in);
 //            System.out.println(
 //                    "Valid commands are: 1.\"Display all books\" or 2.\"Insert books\" or \"echo <message>\" to get message echoed back, \"quit\"");
@@ -58,8 +62,14 @@ public class Client {
                     consoleInput.nextLine();
                     out.println("Display Book by ID: " + bookId);
 
-                    String jsonBook = in.readLine();
-                    System.out.println("Client message: Response from server after displaying book: " + jsonBook);
+                    String responseBook = in.readLine();
+
+                    responseBook=responseBook.substring(responseBook.indexOf("{"));
+                    JsonParser parser = new JsonParser();
+                    JsonObject jsonBook = parser.parse(responseBook).getAsJsonObject();
+                    Book searchedBook=gson.fromJson(jsonBook,Book.class);
+                    System.out.println("Client message: Response from server after displaying book: " );
+                    System.out.println(searchedBook.toString());
                 }
 
                 /**
@@ -70,9 +80,30 @@ public class Client {
                     out.println("Display all books");
 
                     String books = in.readLine();
+                    books=books.substring(books.indexOf("{"));
+                    String[] jsonObjects = books.split("\\},\\s*\\{");
+
+
+
+                    JsonParser parser = new JsonParser();
+                    List<Book> bookList = new ArrayList<>();
+
+                    for (String json : jsonObjects) {
+                    json = json.replaceAll("[\\{\\}\\[\\]]", "");
+                        json = "{" + json + "}";
+
+                        JsonObject jsonObject = parser.parse(json).getAsJsonObject();
+
+                        Book book = gson.fromJson(jsonObject, Book.class);
+
+                        bookList.add(book);
+                    }
 
                     System.out.println(
-                            "Client message: Response from server after \"Display all books\" request: " + books);
+                            "Client message: Response from server after \"Display all books\" request: " );
+                    for (Book book : bookList) {
+                        System.out.println(book.toString());
+                    }
                 }
                 /**
                  * Main author: Kim Fui Leung
@@ -173,7 +204,7 @@ public class Client {
                             System.out.println("Invalid input please try again");
                         }
                     }
-                    Gson gson = new Gson();
+
                     Book newBook = new Book(newTitle, newGenre, newAuthor, newPages, newSeries, newStock, newRating, newDescription, newPublisher);
 //                    JsonObject wrappedJson = new JsonObject();
 //                    wrappedJson.add("NewBook", gson.toJsonTree(newBook));
@@ -182,8 +213,13 @@ public class Client {
 //                    System.out.println("NewBook:"+gson.toJson(newBook));
                     out.println("NewBook:"+gson.toJson(newBook));
                     String response = in.readLine();
+                    response=response.substring(response.indexOf("{"));
+                    JsonParser parser = new JsonParser();
+                    JsonObject jsonBook = parser.parse(response).getAsJsonObject();
+                    Book responseBook=gson.fromJson(jsonBook,Book.class);
 
-                    System.out.println("Client message: Response from server after \"Insert books\" request: " + response);
+                    System.out.println("Client message: Response from server after \"Insert books\" request: ");
+                    System.out.println(responseBook.toString());
                 }else if(userRequest.equals("0")){
                     break;
                 }
