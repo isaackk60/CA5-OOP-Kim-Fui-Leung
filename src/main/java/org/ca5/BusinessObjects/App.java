@@ -27,12 +27,12 @@ public class App {
             System.out.println("====================================================");
             System.out.println("                       Menu:                        ");
             System.out.println("====================================================");
-            System.out.println("=            1. View Database                      =");
-            System.out.println("=            2. Add to Database                    =");
-            System.out.println("=            3. Delete from Database               =");
-            System.out.println("=            4. Get Book from Database Using ID    =");
+            System.out.println("=            1. Get all Books Database             =");
+            System.out.println("=            2. Get Book from Database Using ID    =");
+            System.out.println("=            3. Delete Book from Database          =");
+            System.out.println("=            4. Add Book to Database               =");
             System.out.println("=            5. Update Book                        =");
-            System.out.println("=            6. Filter Book                        =");
+            System.out.println("=            6. Filter Books                       =");
             System.out.println("=            7. Convert List to a JSON String      =");
             System.out.println("=            8. Convert Book to JSON               =");
             System.out.println("=            0. Exit                               =");
@@ -60,6 +60,24 @@ public class App {
                         }
                         break;
                     case 2:
+                        System.out.println("Enter the ID of the book to display details:");
+                        int bookId = scanner.nextInt();
+
+                        Book book = IBookDao.getBookById(bookId);
+                        if (book != null) {
+                            System.out.println(book);
+                        } else {
+                            System.out.println("No Book found with the id " + bookId);
+                        }
+
+                        break;
+
+                    case 3:
+                        System.out.println("Enter the ID of the book to delete:");
+                        int deleteId = scanner.nextInt();
+                        IBookDao.deleteBookById(deleteId);
+                        break;
+                    case 4:
 
                         System.out.println("\nAdding to Database:");
                         String newTitle=scanner.nextLine().trim();
@@ -160,23 +178,6 @@ public class App {
 
                         Book insertedBook = IBookDao.insertBook(newBook);
                         System.out.println(insertedBook.toString());
-                        break;
-                    case 3:
-                        System.out.println("Enter the ID of the book to delete:");
-                        int deleteId = scanner.nextInt();
-                        IBookDao.deleteBookById(deleteId);
-                        break;
-                    case 4:
-                        System.out.println("Enter the ID of the book to display details:");
-                        int bookId = scanner.nextInt();
-
-                        Book book = IBookDao.getBookById(bookId);
-                        if (book != null) {
-                            System.out.println(book.toString());
-                        } else {
-                            System.out.println("No Book found with the id " + bookId);
-                        }
-
                         break;
 
                     case 5:
