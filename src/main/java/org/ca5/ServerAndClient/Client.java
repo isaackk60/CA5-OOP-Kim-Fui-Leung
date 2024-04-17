@@ -45,7 +45,7 @@ public class Client {
                 System.out.println("=            1. Display Book by ID                  =");
                 System.out.println("=            2. Display all Books                   =");
                 System.out.println("=            3. Insert a Book                       =");
-                System.out.println("=            0. Exit                                =");
+                System.out.println("=            6. Exit                                =");
                 System.out.println("====================================================");
                 System.out.println("Please enter a command: ");
                 String userRequest = consoleInput.nextLine();
@@ -54,41 +54,42 @@ public class Client {
                  * Main author: Jamie Duffy Creagh
                  * Date: 11-04-2024
                  **/
-                if (userRequest.equals("1"))
-                {
+                if (userRequest.equals("1")) {
                     System.out.println("Enter Book ID:");
                     int bookId = consoleInput.nextInt();
                     consoleInput.nextLine();
                     out.println("Display Book by ID: " + bookId);
 
                     String responseBook = in.readLine();
-
-                    responseBook=responseBook.substring(responseBook.indexOf("{"));
-                    JsonParser parser = new JsonParser();
-                    JsonObject jsonBook = parser.parse(responseBook).getAsJsonObject();
-                    Book searchedBook=gson.fromJson(jsonBook,Book.class);
-                    System.out.println("Client message: Response from server after displaying book: " );
-                    System.out.println(searchedBook.toString());
+                    if (!responseBook.equals("Book with ID " + bookId + " not found.")) {
+                        responseBook = responseBook.substring(responseBook.indexOf("{"));
+                        JsonParser parser = new JsonParser();
+                        JsonObject jsonBook = parser.parse(responseBook).getAsJsonObject();
+                        Book searchedBook = gson.fromJson(jsonBook, Book.class);
+                        System.out.println("Client message: Response from server after displaying book: ");
+                        System.out.println(searchedBook.toString());
+                    } else {
+                        System.out.println(responseBook);
+                    }
                 }
 
                 /**
                  * Main author: Aoife Murphy
                  * Date: 10-04-2024
                  **/
-                else if(userRequest.equals("2")){
+                else if (userRequest.equals("2")) {
                     out.println("Display all books");
 
                     String books = in.readLine();
-                    books=books.substring(books.indexOf("{"));
+                    books = books.substring(books.indexOf("{"));
                     String[] jsonObjects = books.split("\\},\\s*\\{");
-
 
 
                     JsonParser parser = new JsonParser();
                     List<Book> bookList = new ArrayList<>();
 
                     for (String json : jsonObjects) {
-                    json = json.replaceAll("[\\{\\}\\[\\]]", "");
+                        json = json.replaceAll("[\\{\\}\\[\\]]", "");
                         json = "{" + json + "}";
 
                         JsonObject jsonObject = parser.parse(json).getAsJsonObject();
@@ -99,7 +100,7 @@ public class Client {
                     }
 
                     System.out.println(
-                            "Client message: Response from server after \"Display all books\" request: " );
+                            "Client message: Response from server after \"Display all books\" request: ");
                     for (Book book : bookList) {
                         System.out.println(book.toString());
                     }
@@ -108,9 +109,9 @@ public class Client {
                  * Main author: Kim Fui Leung
                  * Date: 10-04-2024
                  **/
-                else if(userRequest.equals("3")){
+                else if (userRequest.equals("3")) {
                     System.out.println("Enter book Title:");
-                    String newTitle=consoleInput.nextLine().trim();
+                    String newTitle = consoleInput.nextLine().trim();
                     while (newTitle.trim().isEmpty()) {
                         System.out.println("Enter book Title:");
                         newTitle = consoleInput.nextLine().trim();
@@ -210,19 +211,25 @@ public class Client {
 ////                    System.out.println(wrappedJson.toString());
 //                    out.println(wrappedJson.toString());
 //                    System.out.println("NewBook:"+gson.toJson(newBook));
-                    out.println("NewBook:"+gson.toJson(newBook));
+                    out.println("Insert a New Book: " + gson.toJson(newBook));
                     String response = in.readLine();
-                    response=response.substring(response.indexOf("{"));
+                    response = response.substring(response.indexOf("{"));
                     JsonParser parser = new JsonParser();
                     JsonObject jsonBook = parser.parse(response).getAsJsonObject();
-                    Book responseBook=gson.fromJson(jsonBook,Book.class);
+                    Book responseBook = gson.fromJson(jsonBook, Book.class);
 
-                    System.out.println("Client message: Response from server after \"Insert books\" request: ");
+                    System.out.println("Client message: Response from server after \"Insert a New book\" request: ");
                     System.out.println(responseBook.toString());
-                }else if(userRequest.equals("0")){
+                }/**
+                 * Main author: Kim Fui Leung
+                 * Date: 17-04-2024
+                 **/
+                else if (userRequest.equals("6")) {
+                    out.println("Exit");
+                    String response = in.readLine();
+                    System.out.println("Client message: Response from server: \"" + response + "\"");
                     break;
-                }
-                else {
+                } else {
                     System.out.println("Command unknown. Try again.");
                 }
 

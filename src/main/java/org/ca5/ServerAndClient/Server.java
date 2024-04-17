@@ -14,6 +14,7 @@ import org.ca5.DAOs.MySqlBooks;
 import org.ca5.DTOs.Book;
 import org.ca5.Exceptions.DaoException;
 import com.google.gson.Gson;
+
 public class Server {
 
     final int SERVER_PORT_NUMBER = 8888; // could be any port from 1024 to 49151 (that doesn't clash with other Apps)
@@ -120,7 +121,7 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
                     String jsonBooks = books.booksListToJson(allBooks);
                     socketWriter.println(jsonBooks);
                     System.out.println("Server message: All Books sent to client.");
-                }  else if (request.startsWith("Display Book by ID")) {
+                } else if (request.startsWith("Display Book by ID")) {
                     int bookId = Integer.parseInt(request.split(":")[1].trim());
                     MySqlBooks books = new MySqlBooks();
                     Book book = books.getBookById(bookId);
@@ -140,9 +141,9 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
 //                    JsonObject jsonObject = parser.parse(request).getAsJsonObject();
 //                    JsonObject jsonBook=jsonObject.get("NewBook").getAsJsonObject();
 ////                    socketWriter.println(jsonBook.get("publisher").toString());
-                else if(request.startsWith("NewBook:")){
-                    String book=request.substring(request.indexOf("{"));
-                                        JsonParser parser = new JsonParser();
+                else if (request.startsWith("Insert a New Book")) {
+                    String book = request.substring(request.indexOf("{"));
+                    JsonParser parser = new JsonParser();
                     JsonObject jsonBook = parser.parse(book).getAsJsonObject();
 
                     Gson gson = new Gson();
@@ -159,8 +160,10 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
                     }
 
 
-                }
-                else {
+                } else if (request.startsWith("Exit")) {
+                    socketWriter.println("Goodbye.");
+                    System.out.println("Server message: Client has notified us that it is quitting.");
+                } else {
                     socketWriter.println("error I'm sorry I don't understand your request");
                     System.out.println("Server message: Invalid request from client.");
                 }
