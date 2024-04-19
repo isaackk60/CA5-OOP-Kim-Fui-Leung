@@ -45,6 +45,8 @@ public class Client {
                 System.out.println("=            1. Display Book by ID                  =");
                 System.out.println("=            2. Display all Books                   =");
                 System.out.println("=            3. Insert a Book                       =");
+                System.out.println("=            4. Delete a Book by ID                 =");
+                System.out.println("=            5. Get Images List                     =");
                 System.out.println("=            6. Exit                                =");
                 System.out.println("====================================================");
                 System.out.println("Please enter a command: ");
@@ -220,7 +222,28 @@ public class Client {
 
                     System.out.println("Client message: Response from server after \"Insert a New book\" request: ");
                     System.out.println(responseBook.toString());
-                }/**
+                }
+                /**
+                 * Main author: Jamie Duffy Creagh
+                 * Date: 17-04-2024
+                 **/
+                else if (userRequest.equals("4")) {
+                    System.out.println("Enter Book ID to delete:");
+                    int bookIdToDelete = consoleInput.nextInt();
+                    consoleInput.nextLine();
+                    out.println("Delete Book by ID: " + bookIdToDelete);
+
+                    String response = in.readLine();
+
+                    // Check if the response starts with "error"
+                    if (response.startsWith("error")) {
+                        System.out.println("Client message: Error from server: " + response);
+                    } else {
+                        System.out.println("Client message: Book deleted successfully.");
+                    }
+                }
+
+                /**
                  * Main author: Kim Fui Leung
                  * Date: 17-04-2024
                  **/

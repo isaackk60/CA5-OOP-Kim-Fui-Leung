@@ -111,9 +111,8 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
                         .println("Server: (ClientHandler): Read command from client " + clientNumber + ": " + request);
 
                 /**
-                 * Author: Aoife Murphy
-                 * Other contributors: Kim Fui Leung, Jamie Duffy Creagh
-                 * Date 10-04-24
+                 * Main author: Jamie Duffy Creagh
+                 * Date: 11-04-24
                  */
                 if (request.startsWith("Display all books")) {
                     MySqlBooks books = new MySqlBooks();
@@ -121,7 +120,12 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
                     String jsonBooks = books.booksListToJson(allBooks);
                     socketWriter.println(jsonBooks);
                     System.out.println("Server message: All Books sent to client.");
-                } else if (request.startsWith("Display Book by ID")) {
+                }
+                /**
+                 * Main author: Aoife Murphy
+                 * Date: 10-04-24
+                 */
+                else if (request.startsWith("Display Book by ID")) {
                     int bookId = Integer.parseInt(request.split(":")[1].trim());
                     MySqlBooks books = new MySqlBooks();
                     Book book = books.getBookById(bookId);
@@ -141,6 +145,10 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
 //                    JsonObject jsonObject = parser.parse(request).getAsJsonObject();
 //                    JsonObject jsonBook=jsonObject.get("NewBook").getAsJsonObject();
 ////                    socketWriter.println(jsonBook.get("publisher").toString());
+                /**
+                 * Main author: Kim Fui Leung
+                 * Date: 10-04-24
+                 */
                 else if (request.startsWith("Insert a New Book")) {
                     String book = request.substring(request.indexOf("{"));
                     JsonParser parser = new JsonParser();
@@ -158,9 +166,23 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
                         socketWriter.println("Failed to insert book.");
                         System.out.println("Server message: Failed to insert Book.");
                     }
-
-
-                } else if (request.startsWith("Exit")) {
+                }
+                /**
+                 * Main author: Jamie Duffy Creagh
+                 * Date: 17-04-24
+                 */
+                else if (request.startsWith("Delete Book by ID")) {
+                    int bookIdToDelete = Integer.parseInt(request.split(":")[1].trim());//seperates the delete id from the request
+                    MySqlBooks books = new MySqlBooks();
+                    books.deleteBookById(bookIdToDelete);
+                    socketWriter.println("Book deleted successfully.");
+                    System.out.println("Book with ID " + bookIdToDelete + " deleted.");
+                }
+                /**
+                 * Main author: Kim Fui Leung
+                 * Date: 17-04-24
+                 */
+                else if (request.startsWith("Exit")) {
                     socketWriter.println("Goodbye.");
                     System.out.println("Server message: Client has notified us that it is quitting.");
                 } else {
