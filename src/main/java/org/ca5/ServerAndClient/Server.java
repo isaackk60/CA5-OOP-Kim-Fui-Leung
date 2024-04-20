@@ -1,11 +1,17 @@
 package org.ca5.ServerAndClient;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.JsonObject;
@@ -59,7 +65,8 @@ public class Server {
             }
         } catch (IOException ex) {
             System.out.println(ex);
-        } finally {
+        }
+        finally {
             try {
                 if (clientSocket != null)
                     clientSocket.close();
@@ -85,6 +92,9 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
     Socket clientSocket;
     final int clientNumber;
 
+    DataOutputStream dataOutputStream = null;
+    DataInputStream dataInputStream = null;
+
     // Constructor
     public ClientHandler(Socket clientSocket, int clientNumber) {
         this.clientSocket = clientSocket; // store socket for closing later
@@ -93,6 +103,8 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
             // assign to fields
             this.socketWriter = new PrintWriter(clientSocket.getOutputStream(), true);
             this.socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            this.dataInputStream = new DataInputStream(clientSocket.getInputStream());
+            this.dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -179,6 +191,18 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
                     System.out.println("Book with ID " + bookIdToDelete + " deleted.");
                 }
                 /**
+                 * Main author: Aoife Murphy
+                 * Date: 20-04-24
+                 */
+                else if (request.startsWith("Get Images List")) {
+                    sendImageFileList();
+                    System.out.println("Getting Images List");
+                }else if(request.startsWith("Download Image:")){
+                    String imageName = request.substring(request.indexOf(":")+1); // Extract image name from request
+                    sendFile(imageName);
+                    System.out.println("Sending the File "+ imageName+" to the client");
+                }
+                /**
                  * Main author: Kim Fui Leung
                  * Date: 17-04-24
                  */
@@ -192,7 +216,8 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
             }
         } catch (IOException | DaoException ex) {
             ex.printStackTrace();
-        } finally {
+        }
+        finally {
             this.socketWriter.close();
             try {
                 this.socketReader.close();
@@ -203,5 +228,59 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
         }
         System.out.println("Server: (ClientHandler): Handler for Client " + clientNumber + " is terminating .....");
     }
+
+    private void sendImageFileList() {
+        List<String> imageNames = new ArrayList<>();
+        // Add image names to the list (e.g., from database, file system, etc.)
+        imageNames.add("serverImages/image1.jpg");
+        imageNames.add("serverImages/image2.jpg");
+        imageNames.add("serverImages/image3.jpg");
+//        imageNames.add("image2.png");
+//        imageNames.add("image3.jpeg");
+
+        // Convert the list of image names to JSON format
+        Gson gson = new Gson();
+        String jsonImageNames = gson.toJson(imageNames);
+
+        // Send the JSON string containing image names to the client
+        socketWriter.println(jsonImageNames);
+        System.out.println("Sent list of image file names to client.");
+
+    }
+
+    // sendFile function define here
+    private void sendFile(String path){
+        File file = new File("serverImages/" + path);
+        if (!file.exists()) {
+            socketWriter.println("Image not found.");
+            return;
+        }
+        try {
+            int bytes = 0;
+            // Open the File at the specified location (path)
+            FileInputStream fileInputStream = new FileInputStream(file);
+
+            // send the length (in bytes) of the file to the server
+            dataOutputStream.writeLong(file.length());
+
+            // Here we break file into chunks
+            byte[] buffer = new byte[4 * 1024]; // 4 kilobyte buffer
+
+            // read bytes from file into the buffer until buffer is full or we reached end
+            // of file
+            while ((bytes = fileInputStream.read(buffer)) != -1) {
+                // Send the buffer contents to Server Socket, along with the count of the number
+                // of bytes
+                dataOutputStream.write(buffer, 0, bytes);
+            }
+            dataOutputStream.flush(); // force the data into the stream
+            System.out.println("File sent: " + file.getName() + ", Size: " + file.length() + " bytes");
+            // close the file
+            fileInputStream.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }
 

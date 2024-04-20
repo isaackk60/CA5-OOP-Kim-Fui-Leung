@@ -17,6 +17,8 @@ import com.google.gson.JsonObject;
 
 
 public class Client {
+    Object dataInputStream = null;
+    Object dataOutputStream = null;
     public static void main(String[] args) {
         Client client = new Client();
         client.start();
@@ -242,6 +244,40 @@ public class Client {
                         System.out.println("Client message: Book deleted successfully.");
                     }
                 }
+                /**
+                 * Main author: Aoife Murphy
+                 * Other contributors: Kim Fui Leung
+                 * Date: 20-04-2024
+                 **/
+                else if (userRequest.equals("5")) {
+                    out.println("Get Images List");
+                    String imageName = in.readLine();
+                    String[] imageNamesArray = gson.fromJson(imageName, String[].class);
+                    System.out.println("Enter your choice:");
+                    int i=0;
+                    for (String name : imageNamesArray) {
+                        i++;
+                        System.out.println(i+": "+name);
+                    }
+                    int selected=consoleInput.nextInt();
+                    consoleInput.nextLine();
+                    String option;
+                    if(selected==1){
+                        option="image1.jpg";
+                    }else if(selected==2){
+                        option="image2.jpg";
+                    }else{
+                        option="image3.jpg";
+                    }
+                    // Send request to server for specific image file
+                    out.println("Download Image:" + option);
+
+                    // Open a new input stream to receive the image file
+                    try (DataInputStream dataInputStream = new DataInputStream(socket.getInputStream())) {
+                        receiveFile(option, dataInputStream); // Pass the file name and input stream to receiveFile method
+                    }
+                }
+
 
                 /**
                  * Main author: Kim Fui Leung
@@ -266,4 +302,43 @@ public class Client {
 
         System.out.println("Exiting client, but server may still be running.");
     }
+
+    private static void receiveFile(String fileName, DataInputStream dataInputStream) {
+
+        try {
+            int bytes = 0;
+            FileOutputStream fileOutputStream = new FileOutputStream("receivedImages/"+fileName);
+
+            // DataInputStream allows us to read Java primitive types from stream e.g.
+            // readLong()
+            // read the size of the file in bytes (the file length)
+            long size = dataInputStream.readLong();
+            System.out.println("Server: file size in bytes = " + size);
+
+            // create a buffer to receive the incoming bytes from the socket
+            byte[] buffer = new byte[4 * 1024]; // 4 kilobyte buffer
+
+            System.out.println("Server: Bytes remaining to be read from socket: ");
+
+            // next, read the raw bytes in chunks (buffer size) that make up the image file
+            // while (size > 0 && (bytes = ((BufferedReader) dataInputStream).read()) != -1)
+            // {
+            while (size > 0 && (bytes = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1) {
+
+                // Here we write the buffer data into the local file
+                fileOutputStream.write(buffer, 0, bytes);
+
+                size = size - bytes;
+                System.out.print(size + ", ");
+            }
+
+            System.out.println("File is Received");
+
+            System.out.println("Look in the images folder to see the transferred file: " + fileName);
+            fileOutputStream.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }
