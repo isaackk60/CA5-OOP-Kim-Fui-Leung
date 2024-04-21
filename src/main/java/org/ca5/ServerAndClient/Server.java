@@ -192,6 +192,7 @@ class ClientHandler implements Runnable // each ClientHandler communicates with 
                 }
                 /**
                  * Main author: Aoife Murphy
+                 * Other contributors: Kim Fui Leung
                  * Date: 20-04-24
                  */
                 else if (request.startsWith("Get Images List")) {

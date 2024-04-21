@@ -17,8 +17,8 @@ import com.google.gson.JsonObject;
 
 
 public class Client {
-    Object dataInputStream = null;
-    Object dataOutputStream = null;
+    DataInputStream dataInputStream = null;
+    DataOutputStream dataOutputStream = null;
     public static void main(String[] args) {
         Client client = new Client();
         client.start();
@@ -273,9 +273,8 @@ public class Client {
                     out.println("Download Image:" + option);
 
                     // Open a new input stream to receive the image file
-                    try (DataInputStream dataInputStream = new DataInputStream(socket.getInputStream())) {
-                        receiveFile(option, dataInputStream); // Pass the file name and input stream to receiveFile method
-                    }
+                    dataInputStream = new DataInputStream(socket.getInputStream());
+                    receiveFile(option, dataInputStream); // Pass the file name and input stream to receiveFile method
                 }
 
 
